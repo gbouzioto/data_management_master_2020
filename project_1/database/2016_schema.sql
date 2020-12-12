@@ -85,7 +85,6 @@ CREATE TABLE public."2016_address" (
 --
 
 CREATE SEQUENCE public."2016_address_address_id_seq"
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -117,7 +116,6 @@ CREATE TABLE public."2016_author" (
 --
 
 CREATE SEQUENCE public."2016_author_author_id_seq"
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -152,7 +150,6 @@ CREATE TABLE public."2016_book" (
 --
 
 CREATE SEQUENCE public."2016_book_book_id_seq"
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -219,7 +216,6 @@ CREATE TABLE public."2016_publisher" (
 --
 
 CREATE SEQUENCE public."2016_publisher_publisher_id_seq"
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -295,7 +291,6 @@ CREATE TABLE public."2016_user_has_address" (
 --
 
 CREATE SEQUENCE public."2016_user_user_id_seq"
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
