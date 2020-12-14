@@ -1,6 +1,7 @@
 import json
 import os
 
+
 class JsonDataParser(object):
     """ Parser for handling the json data"""
     DEFAULT_DATA_PATH = os.path.join(os.getcwd(), "raw_data")
@@ -40,10 +41,10 @@ class JsonDataParser(object):
 
 def main():
     json_parser = JsonDataParser()
-    files = ["goodreads_book_authors.json", "goodreads_books_comics_graphic.json", "goodreads_reviews_comics_graphic.json"]
+    files = ["goodreads_book_authors.json", "goodreads_books_comics_graphic.json",
+             "goodreads_reviews_comics_graphic.json"]
     keys = ["authors", "books", "reviews"]
     json_parser.load_data(files, keys)
-    pass
 
 
 if "__main__" == __name__:

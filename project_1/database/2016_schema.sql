@@ -105,9 +105,9 @@ ALTER SEQUENCE public."2016_address_address_id_seq" OWNED BY public."2016_addres
 
 CREATE TABLE public."2016_author" (
     author_id bigint NOT NULL,
-    gender character varying(6) NOT NULL,
-    name character varying(40) NOT NULL,
-    nationality character varying(25) NOT NULL
+    gender character varying(6),
+    name character varying(50) NOT NULL,
+    nationality character varying(25)
 );
 
 
@@ -136,9 +136,9 @@ ALTER SEQUENCE public."2016_author_author_id_seq" OWNED BY public."2016_author".
 
 CREATE TABLE public."2016_book" (
     book_id bigint NOT NULL,
-    isbn character varying(13) NOT NULL,
-    current_price money NOT NULL,
-    description text NOT NULL,
+    isbn character varying(10) NOT NULL,
+    current_price money,
+    description text,
     publication_year interval year NOT NULL,
     title character varying(200) NOT NULL,
     publisher_id bigint NOT NULL
@@ -205,9 +205,9 @@ CREATE TABLE public."2016_order" (
 
 CREATE TABLE public."2016_publisher" (
     publisher_id bigint NOT NULL,
-    name character varying(40) NOT NULL,
-    phone_number character varying(20) NOT NULL,
-    address_id bigint NOT NULL
+    name character varying(50) NOT NULL,
+    phone_number character varying(30),
+    address_id bigint
 );
 
 
@@ -237,7 +237,7 @@ ALTER SEQUENCE public."2016_publisher_publisher_id_seq" OWNED BY public."2016_pu
 CREATE TABLE public."2016_review" (
     review_id bigint NOT NULL,
     created timestamp with time zone NOT NULL,
-    nickname character varying(40) NOT NULL,
+    nickname character varying(50) NOT NULL,
     score smallint NOT NULL,
     text text NOT NULL
 );
@@ -271,8 +271,8 @@ CREATE TABLE public."2016_user" (
     username character varying(40) NOT NULL,
     email character varying(60) NOT NULL,
     password character varying(20) NOT NULL,
-    phone_number character varying(20) NOT NULL,
-    real_name character varying(40) NOT NULL
+    phone_number character varying(30) NOT NULL,
+    real_name character varying(50) NOT NULL
 );
 
 
