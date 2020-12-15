@@ -146,9 +146,9 @@ CREATE TABLE public."2016_book" (
     isbn character varying(10) NOT NULL,
     current_price money,
     description text,
-    publication_year interval year NOT NULL,
-    title character varying(200) NOT NULL,
-    publisher_id bigint NOT NULL
+    publication_year interval year,
+    title character varying(200),
+    publisher_id bigint
 );
 
 
@@ -160,7 +160,7 @@ CREATE TABLE public."2016_book_author" (
     author_id bigint NOT NULL,
     book_id bigint NOT NULL,
     author_ordinal smallint DEFAULT 0 NOT NULL,
-    role character varying(20) NOT NULL
+    role character varying(25)
 );
 
 
