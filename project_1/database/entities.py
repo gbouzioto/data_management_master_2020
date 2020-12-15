@@ -8,7 +8,7 @@ class BaseEntity(object):
         """Builds the object from the given data"""
         obj = cls()
         for key, value in data.items():
-            if hasattr(object, key):
+            if hasattr(obj, key):
                 setattr(obj, key, value)
         return obj
 
@@ -45,14 +45,11 @@ class Book(BaseEntity):
 
     def __init__(self):
         self.isbn = None
-        self.isbn13 = None
         self.title = None
         self.publication_year = None
         self.current_price = None
         self.description = None
         self.publisher = None
-        self.authors = None
-        self.reviews = None
 
     def __str__(self):
         return f"Book(book_id={self.isbn})"
@@ -74,14 +71,14 @@ class Order(BaseEntity):
     """Represents a Order entity"""
 
     def __init__(self):
-        self.address = None
-        self.book = None
         self.user = None
+        self.billing_address = None
+        self.shipping_address = None
         self.placement = None
         self.completed = None
 
     def __str__(self):
-        return f"Order(address={self.address}, book= {self.book}, user={self.user})"
+        return f"Order(user={self.user})"
 
 
 class User(BaseEntity):
@@ -93,7 +90,6 @@ class User(BaseEntity):
         self.phone_number = None
         self.email = None
         self.real_name = None
-        self.addresses = None
 
     def __str__(self):
         return f"User(username={self.username})"
@@ -110,3 +106,54 @@ class Review(BaseEntity):
 
     def __str__(self):
         return f"Review(nickname={self.nickname})"
+
+
+class BookReview(BaseEntity):
+    """Represents a BookReview entity"""
+
+    def __init__(self):
+        self.book = None
+        self.review = None
+
+    def __str__(self):
+        return f"BookReview(book={self.book}, review=({self.review})"
+
+
+class BookAuthor(BaseEntity):
+    """Represents a BookAuthor entity"""
+
+    def __init__(self):
+        self.author = None
+        self.book = None
+        self.ordinal = None
+        self.role = None
+
+    def __str__(self):
+        return f"BookAuthor(book={self.book}, author=({self.author})"
+
+
+class BookOrder(BaseEntity):
+    """Represents a BookOrder entity"""
+
+    def __init__(self):
+        self.book = None
+        self.order = None
+        self.quantity = None
+
+    def __str__(self):
+        return f"BookOrder(book={self.book}, order=({self.order})"
+
+
+class UserAddress(BaseEntity):
+    """Represents a UserAddress entity"""
+
+    def __init__(self):
+        self.address = None
+        self.user = None
+        self.is_physical = None
+        self.is_shipping = None
+        self.is_billing = None
+        self.is_active = None
+
+    def __str__(self):
+        return f"UserAddress(address={self.address}, review=({self.user})"

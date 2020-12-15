@@ -274,8 +274,8 @@ ALTER SEQUENCE public."2016_publisher_publisher_id_seq" OWNED BY public."2016_pu
 
 CREATE TABLE public."2016_review" (
     review_id bigint NOT NULL,
-    created timestamp with time zone NOT NULL,
-    nickname character varying(50) NOT NULL,
+    created timestamp with time zone,
+    nickname character varying(30) DEFAULT 'anonymous'::character varying NOT NULL,
     score smallint NOT NULL,
     text text NOT NULL
 );

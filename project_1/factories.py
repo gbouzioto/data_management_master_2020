@@ -1,10 +1,12 @@
+import decimal
+import random
 from faker import Faker
-from faker.providers import person, phone_number, internet, isbn, address
-from project_1.database.entities import Address, Author, Book, Publisher, Order, User, Review
+from faker.providers import person, phone_number, internet, isbn, address, date_time, lorem, misc
+from project_1.database.entities import Address, Author, Book, Publisher, User, Review
 
 
 class BaseMixin(object):
-    """Base Mixin"""
+    """BaseMixin"""
 
     def __init__(self, fake: Faker):
         self._fake = fake
@@ -39,10 +41,11 @@ class AddressMixin(BaseMixin):
 
 
 class PersonMixin(BaseMixin):
-    """Book Mixin"""
+    """BookMixin"""
     def __init__(self, fake: Faker):
         super(PersonMixin, self).__init__(fake)
         self._fake.add_provider(person)
+        self._fake.add_provider(phone_number)
 
     def name_and_gender(self):
         gender = 'Male' if self._fake.random.randint(0, 1) == 0 else 'Female'
@@ -60,12 +63,15 @@ class PersonMixin(BaseMixin):
         # Nationality is not included in Faker, so return language instead
         return self._fake.language_name()
 
+    def phone_number(self):
+        return self._fake.phone_number()
+
     def __str__(self):
         return "PersonMixin"
 
 
 class ISBNMixin(BaseMixin):
-    """ISBN Mixin"""
+    """ISBNMixin"""
     def __init__(self, fake: Faker):
         super(ISBNMixin, self).__init__(fake)
         self._fake.add_provider(isbn)
@@ -80,7 +86,82 @@ class ISBNMixin(BaseMixin):
         return "ISBNMixin"
 
 
-class FakeGenerator(AddressMixin, PersonMixin, ISBNMixin):
+class DateTimeMixin(BaseMixin):
+    """DateTimeMixin"""
+    def __init__(self, fake: Faker):
+        super(DateTimeMixin, self).__init__(fake)
+        self._fake.add_provider(date_time)
+
+    def year(self):
+        return self._fake.year()
+
+    def timestamp(self):
+        return self._fake.date_time()
+
+    def __str__(self):
+        return "DateTimeMixin"
+
+
+class LoremMixin(BaseMixin):
+    """LoremMixin"""
+    def __init__(self, fake: Faker):
+        super(LoremMixin, self).__init__(fake)
+        self._fake.add_provider(lorem)
+
+    def sentence(self, nb_words=10):
+        """
+        :param nb_words: Number of words to be included
+        """
+        return self._fake.sentence(nb_words=nb_words)
+
+    def text(self):
+        return self._fake.text()
+
+    def __str__(self):
+        return "LoremMixin"
+
+
+class MiscMixin(BaseMixin):
+    """MiscMixin"""
+    def __init__(self, fake: Faker):
+        super(MiscMixin, self).__init__(fake)
+        self._fake.add_provider(misc)
+        self._fake.add_provider(internet)
+
+    def emails(self, n=1):
+        """
+        :param n: Number of unique emails to be generated
+        """
+        return (self._fake.unique.email() for _ in range(n))
+
+    def usernames(self, n=1):
+        """
+        :param n: Number of unique usernames to be generated
+        """
+        return (self._fake.unique.user_name() for _ in range(n))
+
+    def password(self, length=10):
+        """
+        :param length: password length
+        """
+        return self._fake.password(length=length)
+
+    def nickname(self):
+        return self._fake.user_name()
+
+    @staticmethod
+    def score():
+        return random.randint(1, 5)
+
+    @staticmethod
+    def money():
+        return decimal.Decimal(random.randrange(10000))/100
+
+    def __str__(self):
+        return "MiscMixin"
+
+
+class FakeGenerator(AddressMixin, PersonMixin, ISBNMixin, DateTimeMixin, LoremMixin, MiscMixin):
     """Class used for generating fake data"""
 
     def __init__(self):
@@ -122,7 +203,7 @@ class AuthorFactory(object):
     @staticmethod
     def generate_authors(n=1):
         """
-         Generator of Author objects
+        Generator of Author objects
         :param n: number of objects to be generated
         """
         for i in range(n):
@@ -132,46 +213,93 @@ class AuthorFactory(object):
 
     def __str__(self):
         return "AuthorFactory"
-#
-#
-# class InternetFactory(BaseFactory):
-#     """Class used for generating fake Internet data"""
-#
-#     def __init__(self, fake):
-#         """
-#         :type fake: Faker
-#         """
-#         super(InternetFactory, self).__init__(fake, internet)
-#
-#     def generate_email(self):
-#         return self.fake.unique.ascii_free_email()
-#
-#     def __str__(self):
-#         return f"InternetFactory(fake_id={id(self.fake)})"
-#
-#
-# class PhoneNumberFactory(BaseFactory):
-#     """Class used for generating fake PhoneNumber data"""
-#
-#     def __init__(self, fake):
-#         """
-#         :type fake: Faker
-#         """
-#         super(PhoneNumberFactory, self).__init__(fake, phone_number)
-#
-#     def __str__(self):
-#         return f"PhoneNumberFactory(fake_id={id(self.fake)})"
-#
-#
-# class ISBNFactory(BaseFactory):
-#     """Class used for generating fake ISBN data"""
-#
-#     def __init__(self, fake):
-#         """
-#         :type fake: Faker
-#         """
-#         super(ISBNFactory, self).__init__(fake, isbn)
-#
-#
-#     def __str__(self):
-#         return f"ISBNrFactory(fake_id={id(self.fake)})"
+
+
+class PublisherFactory(object):
+    """Class used for generating fake Publisher data"""
+
+    @staticmethod
+    def generate_publishers(n=1):
+        """
+        Generator of Publisher objects
+        :param n: number of objects to be generated
+        """
+        for i in range(n):
+            data = {"name": _fg.name(), "phone_number": _fg.phone_number()}
+            yield Publisher.build_from_data(data)
+
+    @staticmethod
+    def add_address(publisher: Publisher, publisher_address=None):
+        if not publisher_address:
+            publisher.address = AddressFactory.generate_addresses()
+        else:
+            publisher.address = publisher_address
+
+    def __str__(self):
+        return "PublisherFactory"
+
+
+class BookFactory(object):
+    """Class used for generating fake Book data"""
+
+    @staticmethod
+    def generate_books(n=1):
+        """
+        Generator of Book objects
+        :param n: number of objects to be generated
+        """
+        isbns = list(_fg.isbns(n=n))
+        for i in range(n):
+            data = {"isbn": isbns[i], "publication_year": _fg.year(), "title": _fg.sentence(),
+                    "description": _fg.text(), "current_price": _fg.money()}
+            yield Book.build_from_data(data)
+        _fg.clear_unique()
+
+    @staticmethod
+    def add_publisher(book: Book, publisher=None):
+        if not publisher:
+            book.publisher = PublisherFactory.generate_publishers()
+        else:
+            book.publisher = publisher
+
+    def __str__(self):
+        return "BookFactory"
+
+
+class UserFactory(object):
+    """Class used for generating fake User data"""
+
+    @staticmethod
+    def generate_users(n=1):
+        """
+        Generator of User objects
+        :param n: number of objects to be generated
+        """
+        emails = list(_fg.emails(n=n))
+        usernames = list(_fg.usernames(n=n))
+        for i in range(n):
+            data = {"username": usernames[i], "email": emails[i], "password": _fg.password(),
+                    "real_name": _fg.name(), "phone_number": _fg.phone_number()}
+            yield User.build_from_data(data)
+        _fg.clear_unique()
+
+    def __str__(self):
+        return "UserFactory"
+
+
+class ReviewFactory(object):
+    """Class used for generating fake Review data"""
+
+    @staticmethod
+    def generate_reviews(n=1):
+        """
+        Generator of Review objects
+        :param n: number of objects to be generated
+        """
+        for i in range(n):
+            data = {"nickname": _fg.nickname(), "text": _fg.text(), "score": _fg.score(),
+                    "created": _fg.timestamp()}
+            yield Review.build_from_data(data)
+
+    def __str__(self):
+        return "ReviewFactory"
