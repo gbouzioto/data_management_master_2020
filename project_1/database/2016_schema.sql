@@ -16,47 +16,54 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-ALTER TABLE IF EXISTS ONLY public."2016_user_has_address" DROP CONSTRAINT IF EXISTS "2016_user_has_address_2016_user_user_id_fk";
-ALTER TABLE IF EXISTS ONLY public."2016_user_has_address" DROP CONSTRAINT IF EXISTS "2016_user_has_address_2016_address_address_id_fk";
+ALTER TABLE IF EXISTS ONLY public."2016_book_order" DROP CONSTRAINT IF EXISTS book_order_2016_order_order_id_fk;
+ALTER TABLE IF EXISTS ONLY public."2016_book_order" DROP CONSTRAINT IF EXISTS book_order_2016_book_book_id_fk;
+ALTER TABLE IF EXISTS ONLY public."2016_user_address" DROP CONSTRAINT IF EXISTS "2016_user_has_address_2016_user_user_id_fk";
+ALTER TABLE IF EXISTS ONLY public."2016_user_address" DROP CONSTRAINT IF EXISTS "2016_user_has_address_2016_address_address_id_fk";
 ALTER TABLE IF EXISTS ONLY public."2016_publisher" DROP CONSTRAINT IF EXISTS "2016_publisher_2016_address_address_id_fk";
 ALTER TABLE IF EXISTS ONLY public."2016_order" DROP CONSTRAINT IF EXISTS "2016_order_2016_user_user_id_fk";
-ALTER TABLE IF EXISTS ONLY public."2016_order" DROP CONSTRAINT IF EXISTS "2016_order_2016_book_book_id_fk";
-ALTER TABLE IF EXISTS ONLY public."2016_order" DROP CONSTRAINT IF EXISTS "2016_order_2016_address_address_id_fk";
-ALTER TABLE IF EXISTS ONLY public."2016_book_has_review" DROP CONSTRAINT IF EXISTS "2016_book_has_review_2016_review_review_id_fk";
-ALTER TABLE IF EXISTS ONLY public."2016_book_has_review" DROP CONSTRAINT IF EXISTS "2016_book_has_review_2016_book_book_id_fk";
-ALTER TABLE IF EXISTS ONLY public."2016_book_has_author" DROP CONSTRAINT IF EXISTS "2016_book_has_authors_2016_book_book_id_fk";
-ALTER TABLE IF EXISTS ONLY public."2016_book_has_author" DROP CONSTRAINT IF EXISTS "2016_book_has_authors_2016_author_author_id_fk";
+ALTER TABLE IF EXISTS ONLY public."2016_order" DROP CONSTRAINT IF EXISTS "2016_order_2016_user_address_address_id_user_id_fk_2";
+ALTER TABLE IF EXISTS ONLY public."2016_order" DROP CONSTRAINT IF EXISTS "2016_order_2016_user_address_address_id_user_id_fk";
+ALTER TABLE IF EXISTS ONLY public."2016_book_review" DROP CONSTRAINT IF EXISTS "2016_book_has_review_2016_review_review_id_fk";
+ALTER TABLE IF EXISTS ONLY public."2016_book_review" DROP CONSTRAINT IF EXISTS "2016_book_has_review_2016_book_book_id_fk";
+ALTER TABLE IF EXISTS ONLY public."2016_book_author" DROP CONSTRAINT IF EXISTS "2016_book_has_authors_2016_book_book_id_fk";
+ALTER TABLE IF EXISTS ONLY public."2016_book_author" DROP CONSTRAINT IF EXISTS "2016_book_has_authors_2016_author_author_id_fk";
 ALTER TABLE IF EXISTS ONLY public."2016_book" DROP CONSTRAINT IF EXISTS "2016_book_2016_publisher_publisher_id_fk";
 DROP INDEX IF EXISTS public."2016_user_username_uindex";
 DROP INDEX IF EXISTS public."2016_user_email_uindex";
+DROP INDEX IF EXISTS public."2016_order_order_id_uindex";
 DROP INDEX IF EXISTS public."2016_book_isbn_uindex";
+ALTER TABLE IF EXISTS ONLY public."2016_book_order" DROP CONSTRAINT IF EXISTS book_order_pk;
 ALTER TABLE IF EXISTS ONLY public."2016_user" DROP CONSTRAINT IF EXISTS "2016_user_pk";
-ALTER TABLE IF EXISTS ONLY public."2016_user_has_address" DROP CONSTRAINT IF EXISTS "2016_user_has_address_pk";
+ALTER TABLE IF EXISTS ONLY public."2016_user_address" DROP CONSTRAINT IF EXISTS "2016_user_has_address_pk";
 ALTER TABLE IF EXISTS ONLY public."2016_review" DROP CONSTRAINT IF EXISTS "2016_review_pk";
 ALTER TABLE IF EXISTS ONLY public."2016_publisher" DROP CONSTRAINT IF EXISTS "2016_publisher_pk";
 ALTER TABLE IF EXISTS ONLY public."2016_order" DROP CONSTRAINT IF EXISTS "2016_order_pk";
 ALTER TABLE IF EXISTS ONLY public."2016_book" DROP CONSTRAINT IF EXISTS "2016_book_pk";
-ALTER TABLE IF EXISTS ONLY public."2016_book_has_review" DROP CONSTRAINT IF EXISTS "2016_book_has_review_pk";
-ALTER TABLE IF EXISTS ONLY public."2016_book_has_author" DROP CONSTRAINT IF EXISTS "2016_book_has_authors_pk";
+ALTER TABLE IF EXISTS ONLY public."2016_book_review" DROP CONSTRAINT IF EXISTS "2016_book_has_review_pk";
+ALTER TABLE IF EXISTS ONLY public."2016_book_author" DROP CONSTRAINT IF EXISTS "2016_book_has_authors_pk";
 ALTER TABLE IF EXISTS ONLY public."2016_author" DROP CONSTRAINT IF EXISTS "2016_author_pk";
 ALTER TABLE IF EXISTS ONLY public."2016_address" DROP CONSTRAINT IF EXISTS "2016_address_pk";
 ALTER TABLE IF EXISTS public."2016_user" ALTER COLUMN user_id DROP DEFAULT;
 ALTER TABLE IF EXISTS public."2016_review" ALTER COLUMN review_id DROP DEFAULT;
 ALTER TABLE IF EXISTS public."2016_publisher" ALTER COLUMN publisher_id DROP DEFAULT;
+ALTER TABLE IF EXISTS public."2016_order" ALTER COLUMN order_id DROP DEFAULT;
 ALTER TABLE IF EXISTS public."2016_book" ALTER COLUMN book_id DROP DEFAULT;
 ALTER TABLE IF EXISTS public."2016_author" ALTER COLUMN author_id DROP DEFAULT;
 ALTER TABLE IF EXISTS public."2016_address" ALTER COLUMN address_id DROP DEFAULT;
 DROP SEQUENCE IF EXISTS public."2016_user_user_id_seq";
-DROP TABLE IF EXISTS public."2016_user_has_address";
+DROP TABLE IF EXISTS public."2016_user_address";
 DROP TABLE IF EXISTS public."2016_user";
 DROP SEQUENCE IF EXISTS public."2016_review_review_id_seq";
 DROP TABLE IF EXISTS public."2016_review";
 DROP SEQUENCE IF EXISTS public."2016_publisher_publisher_id_seq";
 DROP TABLE IF EXISTS public."2016_publisher";
+DROP SEQUENCE IF EXISTS public."2016_order_order_id_seq";
 DROP TABLE IF EXISTS public."2016_order";
-DROP TABLE IF EXISTS public."2016_book_has_review";
-DROP TABLE IF EXISTS public."2016_book_has_author";
+DROP TABLE IF EXISTS public."2016_book_review";
+DROP TABLE IF EXISTS public."2016_book_order";
 DROP SEQUENCE IF EXISTS public."2016_book_book_id_seq";
+DROP TABLE IF EXISTS public."2016_book_author";
 DROP TABLE IF EXISTS public."2016_book";
 DROP SEQUENCE IF EXISTS public."2016_author_author_id_seq";
 DROP TABLE IF EXISTS public."2016_author";
@@ -146,6 +153,18 @@ CREATE TABLE public."2016_book" (
 
 
 --
+-- Name: 2016_book_author; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public."2016_book_author" (
+    author_id bigint NOT NULL,
+    book_id bigint NOT NULL,
+    author_ordinal smallint DEFAULT 0 NOT NULL,
+    role character varying(20) NOT NULL
+);
+
+
+--
 -- Name: 2016_book_book_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -165,22 +184,21 @@ ALTER SEQUENCE public."2016_book_book_id_seq" OWNED BY public."2016_book".book_i
 
 
 --
--- Name: 2016_book_has_author; Type: TABLE; Schema: public; Owner: -
+-- Name: 2016_book_order; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public."2016_book_has_author" (
-    author_id bigint NOT NULL,
+CREATE TABLE public."2016_book_order" (
     book_id bigint NOT NULL,
-    author_ordinal integer NOT NULL,
-    role character varying(20) NOT NULL
+    order_id bigint NOT NULL,
+    quantity integer DEFAULT 1 NOT NULL
 );
 
 
 --
--- Name: 2016_book_has_review; Type: TABLE; Schema: public; Owner: -
+-- Name: 2016_book_review; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public."2016_book_has_review" (
+CREATE TABLE public."2016_book_review" (
     book_id bigint NOT NULL,
     review_id bigint NOT NULL
 );
@@ -191,12 +209,32 @@ CREATE TABLE public."2016_book_has_review" (
 --
 
 CREATE TABLE public."2016_order" (
-    address_id bigint NOT NULL,
-    book_id bigint NOT NULL,
+    order_id bigint NOT NULL,
     user_id bigint NOT NULL,
+    billing_address_id bigint NOT NULL,
+    shipping_address_id bigint NOT NULL,
     placement timestamp with time zone NOT NULL,
     completed timestamp with time zone
 );
+
+
+--
+-- Name: 2016_order_order_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public."2016_order_order_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: 2016_order_order_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public."2016_order_order_id_seq" OWNED BY public."2016_order".order_id;
 
 
 --
@@ -277,12 +315,16 @@ CREATE TABLE public."2016_user" (
 
 
 --
--- Name: 2016_user_has_address; Type: TABLE; Schema: public; Owner: -
+-- Name: 2016_user_address; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public."2016_user_has_address" (
+CREATE TABLE public."2016_user_address" (
     address_id bigint NOT NULL,
-    user_id bigint NOT NULL
+    user_id bigint NOT NULL,
+    " is_physical" boolean DEFAULT true NOT NULL,
+    is_shipping boolean DEFAULT true NOT NULL,
+    is_billing boolean DEFAULT true NOT NULL,
+    is_active boolean DEFAULT true NOT NULL
 );
 
 
@@ -327,6 +369,13 @@ ALTER TABLE ONLY public."2016_book" ALTER COLUMN book_id SET DEFAULT nextval('pu
 
 
 --
+-- Name: 2016_order order_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."2016_order" ALTER COLUMN order_id SET DEFAULT nextval('public."2016_order_order_id_seq"'::regclass);
+
+
+--
 -- Name: 2016_publisher publisher_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -364,18 +413,18 @@ ALTER TABLE ONLY public."2016_author"
 
 
 --
--- Name: 2016_book_has_author 2016_book_has_authors_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: 2016_book_author 2016_book_has_authors_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."2016_book_has_author"
+ALTER TABLE ONLY public."2016_book_author"
     ADD CONSTRAINT "2016_book_has_authors_pk" PRIMARY KEY (author_id, book_id);
 
 
 --
--- Name: 2016_book_has_review 2016_book_has_review_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: 2016_book_review 2016_book_has_review_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."2016_book_has_review"
+ALTER TABLE ONLY public."2016_book_review"
     ADD CONSTRAINT "2016_book_has_review_pk" PRIMARY KEY (book_id, review_id);
 
 
@@ -392,7 +441,7 @@ ALTER TABLE ONLY public."2016_book"
 --
 
 ALTER TABLE ONLY public."2016_order"
-    ADD CONSTRAINT "2016_order_pk" PRIMARY KEY (address_id, book_id, user_id);
+    ADD CONSTRAINT "2016_order_pk" PRIMARY KEY (user_id, order_id);
 
 
 --
@@ -412,10 +461,10 @@ ALTER TABLE ONLY public."2016_review"
 
 
 --
--- Name: 2016_user_has_address 2016_user_has_address_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: 2016_user_address 2016_user_has_address_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."2016_user_has_address"
+ALTER TABLE ONLY public."2016_user_address"
     ADD CONSTRAINT "2016_user_has_address_pk" PRIMARY KEY (address_id, user_id);
 
 
@@ -428,10 +477,25 @@ ALTER TABLE ONLY public."2016_user"
 
 
 --
+-- Name: 2016_book_order book_order_pk; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."2016_book_order"
+    ADD CONSTRAINT book_order_pk PRIMARY KEY (book_id, order_id);
+
+
+--
 -- Name: 2016_book_isbn_uindex; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX "2016_book_isbn_uindex" ON public."2016_book" USING btree (isbn);
+
+
+--
+-- Name: 2016_order_order_id_uindex; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX "2016_order_order_id_uindex" ON public."2016_order" USING btree (order_id);
 
 
 --
@@ -457,51 +521,51 @@ ALTER TABLE ONLY public."2016_book"
 
 
 --
--- Name: 2016_book_has_author 2016_book_has_authors_2016_author_author_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: 2016_book_author 2016_book_has_authors_2016_author_author_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."2016_book_has_author"
+ALTER TABLE ONLY public."2016_book_author"
     ADD CONSTRAINT "2016_book_has_authors_2016_author_author_id_fk" FOREIGN KEY (author_id) REFERENCES public."2016_author"(author_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: 2016_book_has_author 2016_book_has_authors_2016_book_book_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: 2016_book_author 2016_book_has_authors_2016_book_book_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."2016_book_has_author"
+ALTER TABLE ONLY public."2016_book_author"
     ADD CONSTRAINT "2016_book_has_authors_2016_book_book_id_fk" FOREIGN KEY (book_id) REFERENCES public."2016_book"(book_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: 2016_book_has_review 2016_book_has_review_2016_book_book_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: 2016_book_review 2016_book_has_review_2016_book_book_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."2016_book_has_review"
+ALTER TABLE ONLY public."2016_book_review"
     ADD CONSTRAINT "2016_book_has_review_2016_book_book_id_fk" FOREIGN KEY (book_id) REFERENCES public."2016_book"(book_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: 2016_book_has_review 2016_book_has_review_2016_review_review_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: 2016_book_review 2016_book_has_review_2016_review_review_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."2016_book_has_review"
+ALTER TABLE ONLY public."2016_book_review"
     ADD CONSTRAINT "2016_book_has_review_2016_review_review_id_fk" FOREIGN KEY (review_id) REFERENCES public."2016_review"(review_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: 2016_order 2016_order_2016_address_address_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: 2016_order 2016_order_2016_user_address_address_id_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public."2016_order"
-    ADD CONSTRAINT "2016_order_2016_address_address_id_fk" FOREIGN KEY (address_id) REFERENCES public."2016_address"(address_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_order_2016_user_address_address_id_user_id_fk" FOREIGN KEY (billing_address_id, user_id) REFERENCES public."2016_user_address"(address_id, user_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: 2016_order 2016_order_2016_book_book_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: 2016_order 2016_order_2016_user_address_address_id_user_id_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public."2016_order"
-    ADD CONSTRAINT "2016_order_2016_book_book_id_fk" FOREIGN KEY (book_id) REFERENCES public."2016_book"(book_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_order_2016_user_address_address_id_user_id_fk_2" FOREIGN KEY (shipping_address_id, user_id) REFERENCES public."2016_user_address"(address_id, user_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -521,19 +585,35 @@ ALTER TABLE ONLY public."2016_publisher"
 
 
 --
--- Name: 2016_user_has_address 2016_user_has_address_2016_address_address_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: 2016_user_address 2016_user_has_address_2016_address_address_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."2016_user_has_address"
+ALTER TABLE ONLY public."2016_user_address"
     ADD CONSTRAINT "2016_user_has_address_2016_address_address_id_fk" FOREIGN KEY (address_id) REFERENCES public."2016_address"(address_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: 2016_user_has_address 2016_user_has_address_2016_user_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: 2016_user_address 2016_user_has_address_2016_user_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."2016_user_has_address"
+ALTER TABLE ONLY public."2016_user_address"
     ADD CONSTRAINT "2016_user_has_address_2016_user_user_id_fk" FOREIGN KEY (user_id) REFERENCES public."2016_user"(user_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: 2016_book_order book_order_2016_book_book_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."2016_book_order"
+    ADD CONSTRAINT book_order_2016_book_book_id_fk FOREIGN KEY (book_id) REFERENCES public."2016_book"(book_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: 2016_book_order book_order_2016_order_order_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."2016_book_order"
+    ADD CONSTRAINT book_order_2016_order_order_id_fk FOREIGN KEY (order_id) REFERENCES public."2016_order"(order_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
