@@ -146,7 +146,7 @@ CREATE TABLE public."2016_book" (
     isbn character(10) NOT NULL,
     current_price money,
     description text,
-    publication_year interval year,
+    publication_year character(4),
     title character varying(200),
     publisher_id bigint
 );

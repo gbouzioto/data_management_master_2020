@@ -12,11 +12,13 @@ def main():
     json_parser = UCSDJsonDataParser()
     json_parser.process_data()
     author_data = json_parser.get_parsed_author_data()
+    book_data = json_parser.get_parsed_book_data()
 
     db_manager = ComicBooksDBManager.create(database=args.database, password=args.password, user=args.user,
                                             host=args.ip, port=args.port)
+    db_manager.truncate_tables()
     db_manager.insert_authors(author_data)
-    db_manager.commit()
+    db_manager.insert_relations(book_data)
     db_manager.close()
 
 

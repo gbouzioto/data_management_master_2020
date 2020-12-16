@@ -31,8 +31,8 @@ class UCSDJsonDataParser(object):
         If any of the data is not loaded returns immediately.
         """
         self._process_authors()
-        # self._process_books()
-        # self._process_reviews()
+        self._process_books()
+        self._process_reviews()
 
     def _process_authors(self):
         """
@@ -75,15 +75,14 @@ class UCSDJsonDataParser(object):
                     book = Book()
                     book.isbn = book_isbn
                     title = book_data.get("title")
-                    book.title = title if title else None
+                    book.title = title if len(title) <= 200 else None
                     publication_year = book_data.get("publication_year")
-                    book.publication_year = publication_year if publication_year else None
+                    book.publication_year = publication_year if len(publication_year) == 4 else None
                     description = book_data.get("description")
                     book.description = description if description else None
 
                     # create a publisher if data is sufficient
-                    publisher_name = book_data.get("publisher")
-                    if publisher_name:
+                    if publisher_name := book_data.get("publisher"):
                         publisher = Publisher()
                         publisher.name = publisher_name
                         book_relations["publisher"] = publisher
