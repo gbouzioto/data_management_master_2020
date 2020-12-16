@@ -6,7 +6,7 @@ from project_1.database.entities import Author, Book, Publisher, BookAuthor, Rev
 
 class UCSDJsonDataParser(object):
     """ Parser for handling the json data"""
-    DEFAULT_DATA_PATH = os.path.join(os.path.dirname(__file__), "raw_data")
+    DEFAULT_DATA_PATH = os.path.join(os.path.dirname(".."), "raw_data")
     AUTHORS_FILENAME = "goodreads_book_authors.json"
     BOOKS_FILENAME = "goodreads_books_comics_graphic.json"
     REVIEWS_FILENAME = "goodreads_reviews_comics_graphic.json"
