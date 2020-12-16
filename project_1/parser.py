@@ -1,12 +1,15 @@
 import json
 import os
+import sys
 
-from project_1.database.entities import Author, Book, Publisher, BookAuthor
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from project_1.database.entities import Author, Book, Publisher, BookAuthor, Review
 
 
 class UCSDJsonDataParser(object):
     """ Parser for handling the json data"""
-    DEFAULT_DATA_PATH = os.path.join(os.getcwd(), "raw_data")
+    DEFAULT_DATA_PATH = os.path.join(os.path.dirname(__file__), "raw_data")
     AUTHORS_FILENAME = "goodreads_book_authors.json"
     BOOKS_FILENAME = "goodreads_books_comics_graphic.json"
     REVIEWS_FILENAME = "goodreads_reviews_comics_graphic.json"
@@ -22,7 +25,7 @@ class UCSDJsonDataParser(object):
         self.authors_filename = authors_filename if authors_filename else self.AUTHORS_FILENAME
         self.books_filename = books_filename if books_filename else self.BOOKS_FILENAME
         self.reviews_filename = reviews_filename if reviews_filename else self.REVIEWS_FILENAME
-        self._valid_data = {"authors": {}, "books": {}, "reviews": {}}
+        self._valid_data = {"authors": {}, "books": {}}
 
     def process_data(self):
         """
@@ -55,7 +58,7 @@ class UCSDJsonDataParser(object):
         A valid book must at least have an isbn and an id. Moreover creates the book_authors relations.
         These are created by searching the authors dictionary given the author ids contained in the 'authors'
         key of the book. In order to avoid duplicate entries afterwards, the author ids found will be removed
-        from the initial authors found.
+        from the initial authors found. Publisher entities are also created here.
         """
         file_path = os.path.join(self.data_path, self.books_filename)
         author_ids = set()
@@ -68,7 +71,7 @@ class UCSDJsonDataParser(object):
 
                     # initialize a book dictionary, it will contain a Book and it can contain a Publisher,
                     # BookAuthor and Review objects
-                    book_relations = {"book_authors": [], "author_ordinal": 0}
+                    book_relations = {"book_authors": [], "author_ordinal": 0, "reviews": []}
 
                     # create a Book
                     book = Book()
@@ -87,7 +90,7 @@ class UCSDJsonDataParser(object):
                         publisher.name = publisher_name
                         book_relations["publisher"] = publisher
 
-                    # add author relations
+                    # add author relations if they can be added
                     if authors := book_data.get("authors"):
                         for author in authors:
                             author_id = author.get("author_id")
@@ -105,12 +108,38 @@ class UCSDJsonDataParser(object):
                     book_relations["book"] = book
                     self._valid_data["books"][book_id] = book_relations
 
+        # remove authors we have already added as book authors
+        for author_id in author_ids:
+            del self._valid_data["authors"][author_id]
+
     def _process_reviews(self):
         """
-        Processes the author data and keeps only the authors that are valid. A valid author must at least
-        have an id and a name.
+        Processes the review data and keeps only the reviews that are valid. A valid review must at least
+        have a text field, reference a book id that is already parsed and have a valid rating.
         """
-        pass
+        file_path = os.path.join(self.data_path, self.reviews_filename)
+        with open(file_path) as fin:
+            for line in fin:
+                review_data = json.loads(line)
+                book_id = review_data.get("book_id")
+                text = review_data.get("review_text")
+                rating = review_data.get("rating")
+                if text and self._validate_review_rating(rating) and book_id in self._valid_data["books"].keys():
+                    review = Review()
+                    created = review_data.get("date_added")
+                    review.text = text
+                    review.score = rating
+                    review.created = created if created else None
+                    self._valid_data["books"][book_id]["reviews"].append(review)
+
+    @staticmethod
+    def _validate_review_rating(review_rating: int):
+        """
+        Validates that a review rating is valid (it takes values from 1 - 5)
+        :param review_rating: the review rating
+        :rtype: bool
+        """
+        return review_rating in range(1, 6)
 
 
 def main():
