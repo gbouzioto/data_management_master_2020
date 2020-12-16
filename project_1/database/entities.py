@@ -26,6 +26,9 @@ class Author(BaseEntity):
     def __str__(self):
         return f"Author(author_id={self.name + self.nationality})"
 
+    def to_list(self):
+        return [self.gender, self.name, self.nationality]
+
 
 class Address(BaseEntity):
     """Represents an Address entity"""
@@ -38,6 +41,10 @@ class Address(BaseEntity):
 
     def __str__(self):
         return f"Address(address={self.address_name + self.address_number + self.city})"
+
+    def to_dict(self):
+        return {"address_name": self.address_name, "address_number": self.address_number,
+                "city": self.city, "country": self.country, "postal_code": self.postal_code}
 
 
 class Book(BaseEntity):
@@ -54,6 +61,10 @@ class Book(BaseEntity):
     def __str__(self):
         return f"Book(book_id={self.isbn})"
 
+    def to_dict(self):
+        return {"isbn": self.isbn, "title": self.title, "publication_year": self.publication_year,
+                "current_price": self.current_price, "description": self.description}
+
 
 class Publisher(BaseEntity):
     """Represents a Publisher entity"""
@@ -65,6 +76,9 @@ class Publisher(BaseEntity):
 
     def __str__(self):
         return f"Publisher(name={self.name})"
+
+    def to_dict(self):
+        return {"name": self.name, "address": self.address, "phone_number": self.phone_number}
 
 
 class Order(BaseEntity):
@@ -94,6 +108,10 @@ class User(BaseEntity):
     def __str__(self):
         return f"User(username={self.username})"
 
+    def to_dict(self):
+        return {"username": self.username, "password": self.password, "phone_number": self.phone_number,
+                "email": self.email, "real_name": self.real_name}
+
 
 class Review(BaseEntity):
     """Represents a Review entity"""
@@ -106,6 +124,10 @@ class Review(BaseEntity):
 
     def __str__(self):
         return f"Review(nickname={self.nickname})"
+
+    def to_dict(self):
+        return {"nickname": self.nickname, "created": self.created, "score": self.score,
+                "text": self.text}
 
 
 class BookReview(BaseEntity):

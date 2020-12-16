@@ -79,11 +79,11 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public."2016_address" (
     address_id bigint NOT NULL,
-    address_name character varying(50) NOT NULL,
+    address_name character varying NOT NULL,
     address_number smallint NOT NULL,
-    city character varying(30) NOT NULL,
-    country character varying(35) NOT NULL,
-    postal_code character varying(20) NOT NULL
+    city character varying NOT NULL,
+    country character varying NOT NULL,
+    postal_code character varying NOT NULL
 );
 
 
@@ -113,8 +113,8 @@ ALTER SEQUENCE public."2016_address_address_id_seq" OWNED BY public."2016_addres
 CREATE TABLE public."2016_author" (
     author_id bigint NOT NULL,
     gender character varying(6),
-    name character varying(50) NOT NULL,
-    nationality character varying(25)
+    name character varying NOT NULL,
+    nationality character varying
 );
 
 
@@ -143,7 +143,7 @@ ALTER SEQUENCE public."2016_author_author_id_seq" OWNED BY public."2016_author".
 
 CREATE TABLE public."2016_book" (
     book_id bigint NOT NULL,
-    isbn character varying(10) NOT NULL,
+    isbn character(10) NOT NULL,
     current_price money,
     description text,
     publication_year interval year,
@@ -160,7 +160,7 @@ CREATE TABLE public."2016_book_author" (
     author_id bigint NOT NULL,
     book_id bigint NOT NULL,
     author_ordinal smallint DEFAULT 0 NOT NULL,
-    role character varying(25)
+    role character varying
 );
 
 
@@ -243,8 +243,8 @@ ALTER SEQUENCE public."2016_order_order_id_seq" OWNED BY public."2016_order".ord
 
 CREATE TABLE public."2016_publisher" (
     publisher_id bigint NOT NULL,
-    name character varying(50) NOT NULL,
-    phone_number character varying(30),
+    name character varying NOT NULL,
+    phone_number character varying,
     address_id bigint
 );
 
@@ -275,7 +275,7 @@ ALTER SEQUENCE public."2016_publisher_publisher_id_seq" OWNED BY public."2016_pu
 CREATE TABLE public."2016_review" (
     review_id bigint NOT NULL,
     created timestamp with time zone,
-    nickname character varying(30) DEFAULT 'anonymous'::character varying NOT NULL,
+    nickname character varying DEFAULT 'anonymous'::character varying NOT NULL,
     score smallint NOT NULL,
     text text NOT NULL
 );
@@ -306,11 +306,11 @@ ALTER SEQUENCE public."2016_review_review_id_seq" OWNED BY public."2016_review".
 
 CREATE TABLE public."2016_user" (
     user_id bigint NOT NULL,
-    username character varying(40) NOT NULL,
-    email character varying(60) NOT NULL,
-    password character varying(20) NOT NULL,
-    phone_number character varying(30) NOT NULL,
-    real_name character varying(50) NOT NULL
+    username character varying NOT NULL,
+    email character varying NOT NULL,
+    password character varying NOT NULL,
+    phone_number character varying NOT NULL,
+    real_name character varying NOT NULL
 );
 
 
