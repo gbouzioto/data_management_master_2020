@@ -1,8 +1,5 @@
 import json
 import os
-import sys
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from project_1.database.entities import Author, Book, Publisher, BookAuthor, Review
 
@@ -140,12 +137,3 @@ class UCSDJsonDataParser(object):
         :rtype: bool
         """
         return review_rating in range(1, 6)
-
-
-def main():
-    json_parser = UCSDJsonDataParser()
-    json_parser.process_data()
-
-
-if "__main__" == __name__:
-    main()
