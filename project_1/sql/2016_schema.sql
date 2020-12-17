@@ -144,7 +144,7 @@ ALTER SEQUENCE public."2016_author_author_id_seq" OWNED BY public."2016_author".
 CREATE TABLE public."2016_book" (
     book_id bigint NOT NULL,
     isbn character(10) NOT NULL,
-    current_price money,
+    current_price numeric(6,2),
     description text,
     publication_year character(4),
     title character varying(200),

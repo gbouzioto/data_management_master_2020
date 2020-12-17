@@ -1,4 +1,3 @@
-import argparse
 import json
 import os
 
@@ -149,17 +148,3 @@ class UCSDJsonDataParser(object):
         :returns: The book data parsed
         """
         return self._valid_data["books"]
-
-
-def parse_user_args():
-    """
-    Parses the user arguments
-    :returns: user arguments
-    """
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('-d', '--database', help="the name of the database", required=True)
-    arg_parser.add_argument('-pwd', '--password', help="password for the specified database user", required=True)
-    arg_parser.add_argument('-u', '--user', nargs='?', default="postgres", help="database user, defaults to postgres")
-    arg_parser.add_argument('-i', '--ip', nargs='?', default="localhost", help="connection ip, defaults to localhost")
-    arg_parser.add_argument('-p', '--port', nargs='?', default="5432", help="connection port, defaults to 5432")
-    return arg_parser.parse_args()

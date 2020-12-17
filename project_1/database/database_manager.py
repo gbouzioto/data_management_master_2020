@@ -3,6 +3,8 @@ import functools
 import psycopg2
 from psycopg2.extras import execute_values
 
+from project_1.database.factories import MiscMixin
+
 
 def safe_connection(error_msg=None):
     """
@@ -36,7 +38,7 @@ class ComicBooksDBManager(object):
         self._cursor.close()
         self._conn.close()
 
-    @safe_connection("Error executing insert authors method")
+    @safe_connection("Error in executing insert authors method")
     def insert_authors(self, data):
         """
         Inserts all the authors provided in the data
@@ -51,7 +53,7 @@ class ComicBooksDBManager(object):
         self._conn.commit()
         self._present_authors = len(values)
 
-    @safe_connection("Error executing insert relations method")
+    @safe_connection("Error in executing insert relations method")
     def insert_relations(self, book_data):
         """
         Inserts all data from the book_data gathered along with their relations.
@@ -119,7 +121,7 @@ class ComicBooksDBManager(object):
             cur_book_id += 1
             self._conn.commit()
 
-    @safe_connection("Error executing commit method")
+    @safe_connection("Error in executing commit method")
     def commit(self):
         """Commit the changes to the database"""
         self._conn.commit()
@@ -134,6 +136,54 @@ class ComicBooksDBManager(object):
     def _truncate_table(self, table_name):
         sql = """truncate "%s" restart identity cascade""" % table_name
         self._cursor.execute(sql)
+
+    @safe_connection("Error in executing create test data method")
+    def create_test_data(self, user_num=10, order_per_user=5, book_order_per_user=2, address_per_user=3):
+        """
+        Creates data for testing. Note that this method modifies the book price on actual data.
+        If you want to restore their price to its previous value you will have to turn the first
+        (user_num x order_per_user) book ids back to null manually. For simplicity it is assumed that
+        the user always buys the same book in his order x  book_order_per_user times and that his
+        billing address is the same as his shipping address.
+
+        :param user_num: number of Fake users to be created
+        :param order_per_user: number of Fake orders per user
+        :param book_order_per_user: number of Fake book orders per user
+        :param address_per_user: number of Fake addresses per user
+        """
+        book_sql = """update "2016_book" set current_price=%s where book_id=%s"""
+        author_sql = """
+                   insert into "2016_author"(gender, name, nationality)
+                   values (%s, %s, %s)
+               """
+        review_sql = """
+                   insert into "2016_review"(created, score, text)
+                   values (%s, %s, %s)
+               """
+        book_author_sql = """
+                   insert into "2016_book_author"(author_id, book_id, author_ordinal, role) 
+                   values (%s, %s, %s, %s)
+               """
+        book_review_sql = """
+                   insert into "2016_book_review"(book_id, review_id) 
+                   values (%s, %s)
+               """
+
+        book_ids_num = user_num * order_per_user
+        print(f"\n ****** The first {book_ids_num} books were chosen ******\n")
+        # create fake prices
+        prices = [MiscMixin.money() for _ in range(book_ids_num)]
+        for i in range(book_ids_num):
+            self._cursor.execute(book_sql, (prices[i], i + 1))
+
+        self._conn.commit()
+
+    @safe_connection("Error in executing clear_test_data method")
+    def clear_test_data(self):
+        table_names = ["2016_user", "2016_address", "2016_order", "2016_book_order", "2016_user_address"]
+        for table_name in table_names:
+            self._truncate_table(table_name)
+        self._conn.commit()
 
     @classmethod
     def create(cls, database, password, user="postgres", host="localhost", port="5432"):
