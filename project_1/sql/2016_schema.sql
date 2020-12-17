@@ -80,7 +80,7 @@ SET default_table_access_method = heap;
 CREATE TABLE public."2016_address" (
     address_id bigint NOT NULL,
     address_name character varying NOT NULL,
-    address_number smallint NOT NULL,
+    address_number integer NOT NULL,
     city character varying NOT NULL,
     country character varying NOT NULL,
     postal_code character varying NOT NULL
@@ -321,7 +321,7 @@ CREATE TABLE public."2016_user" (
 CREATE TABLE public."2016_user_address" (
     address_id bigint NOT NULL,
     user_id bigint NOT NULL,
-    " is_physical" boolean DEFAULT true NOT NULL,
+    is_physical boolean DEFAULT true NOT NULL,
     is_shipping boolean DEFAULT true NOT NULL,
     is_billing boolean DEFAULT true NOT NULL,
     is_active boolean DEFAULT true NOT NULL
@@ -517,7 +517,7 @@ CREATE UNIQUE INDEX "2016_user_username_uindex" ON public."2016_user" USING btre
 --
 
 ALTER TABLE ONLY public."2016_book"
-    ADD CONSTRAINT "2016_book_2016_publisher_publisher_id_fk" FOREIGN KEY (publisher_id) REFERENCES public."2016_publisher"(publisher_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_book_2016_publisher_publisher_id_fk" FOREIGN KEY (publisher_id) REFERENCES public."2016_publisher"(publisher_id);
 
 
 --
@@ -525,7 +525,7 @@ ALTER TABLE ONLY public."2016_book"
 --
 
 ALTER TABLE ONLY public."2016_book_author"
-    ADD CONSTRAINT "2016_book_has_authors_2016_author_author_id_fk" FOREIGN KEY (author_id) REFERENCES public."2016_author"(author_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_book_has_authors_2016_author_author_id_fk" FOREIGN KEY (author_id) REFERENCES public."2016_author"(author_id);
 
 
 --
@@ -533,7 +533,7 @@ ALTER TABLE ONLY public."2016_book_author"
 --
 
 ALTER TABLE ONLY public."2016_book_author"
-    ADD CONSTRAINT "2016_book_has_authors_2016_book_book_id_fk" FOREIGN KEY (book_id) REFERENCES public."2016_book"(book_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_book_has_authors_2016_book_book_id_fk" FOREIGN KEY (book_id) REFERENCES public."2016_book"(book_id);
 
 
 --
@@ -541,7 +541,7 @@ ALTER TABLE ONLY public."2016_book_author"
 --
 
 ALTER TABLE ONLY public."2016_book_review"
-    ADD CONSTRAINT "2016_book_has_review_2016_book_book_id_fk" FOREIGN KEY (book_id) REFERENCES public."2016_book"(book_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_book_has_review_2016_book_book_id_fk" FOREIGN KEY (book_id) REFERENCES public."2016_book"(book_id);
 
 
 --
@@ -549,7 +549,7 @@ ALTER TABLE ONLY public."2016_book_review"
 --
 
 ALTER TABLE ONLY public."2016_book_review"
-    ADD CONSTRAINT "2016_book_has_review_2016_review_review_id_fk" FOREIGN KEY (review_id) REFERENCES public."2016_review"(review_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_book_has_review_2016_review_review_id_fk" FOREIGN KEY (review_id) REFERENCES public."2016_review"(review_id);
 
 
 --
@@ -557,7 +557,7 @@ ALTER TABLE ONLY public."2016_book_review"
 --
 
 ALTER TABLE ONLY public."2016_order"
-    ADD CONSTRAINT "2016_order_2016_user_address_address_id_user_id_fk" FOREIGN KEY (billing_address_id, user_id) REFERENCES public."2016_user_address"(address_id, user_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_order_2016_user_address_address_id_user_id_fk" FOREIGN KEY (billing_address_id, user_id) REFERENCES public."2016_user_address"(address_id, user_id);
 
 
 --
@@ -565,7 +565,7 @@ ALTER TABLE ONLY public."2016_order"
 --
 
 ALTER TABLE ONLY public."2016_order"
-    ADD CONSTRAINT "2016_order_2016_user_address_address_id_user_id_fk_2" FOREIGN KEY (shipping_address_id, user_id) REFERENCES public."2016_user_address"(address_id, user_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_order_2016_user_address_address_id_user_id_fk_2" FOREIGN KEY (shipping_address_id, user_id) REFERENCES public."2016_user_address"(address_id, user_id);
 
 
 --
@@ -573,7 +573,7 @@ ALTER TABLE ONLY public."2016_order"
 --
 
 ALTER TABLE ONLY public."2016_order"
-    ADD CONSTRAINT "2016_order_2016_user_user_id_fk" FOREIGN KEY (user_id) REFERENCES public."2016_user"(user_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_order_2016_user_user_id_fk" FOREIGN KEY (user_id) REFERENCES public."2016_user"(user_id);
 
 
 --
@@ -581,7 +581,7 @@ ALTER TABLE ONLY public."2016_order"
 --
 
 ALTER TABLE ONLY public."2016_publisher"
-    ADD CONSTRAINT "2016_publisher_2016_address_address_id_fk" FOREIGN KEY (address_id) REFERENCES public."2016_address"(address_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_publisher_2016_address_address_id_fk" FOREIGN KEY (address_id) REFERENCES public."2016_address"(address_id);
 
 
 --
@@ -589,7 +589,7 @@ ALTER TABLE ONLY public."2016_publisher"
 --
 
 ALTER TABLE ONLY public."2016_user_address"
-    ADD CONSTRAINT "2016_user_has_address_2016_address_address_id_fk" FOREIGN KEY (address_id) REFERENCES public."2016_address"(address_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_user_has_address_2016_address_address_id_fk" FOREIGN KEY (address_id) REFERENCES public."2016_address"(address_id);
 
 
 --
@@ -597,7 +597,7 @@ ALTER TABLE ONLY public."2016_user_address"
 --
 
 ALTER TABLE ONLY public."2016_user_address"
-    ADD CONSTRAINT "2016_user_has_address_2016_user_user_id_fk" FOREIGN KEY (user_id) REFERENCES public."2016_user"(user_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT "2016_user_has_address_2016_user_user_id_fk" FOREIGN KEY (user_id) REFERENCES public."2016_user"(user_id);
 
 
 --
@@ -605,7 +605,7 @@ ALTER TABLE ONLY public."2016_user_address"
 --
 
 ALTER TABLE ONLY public."2016_book_order"
-    ADD CONSTRAINT book_order_2016_book_book_id_fk FOREIGN KEY (book_id) REFERENCES public."2016_book"(book_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT book_order_2016_book_book_id_fk FOREIGN KEY (book_id) REFERENCES public."2016_book"(book_id);
 
 
 --
@@ -613,7 +613,7 @@ ALTER TABLE ONLY public."2016_book_order"
 --
 
 ALTER TABLE ONLY public."2016_book_order"
-    ADD CONSTRAINT book_order_2016_order_order_id_fk FOREIGN KEY (order_id) REFERENCES public."2016_order"(order_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT book_order_2016_order_order_id_fk FOREIGN KEY (order_id) REFERENCES public."2016_order"(order_id);
 
 
 --
