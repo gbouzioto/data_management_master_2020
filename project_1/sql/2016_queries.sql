@@ -27,9 +27,7 @@ select b.isbn, b.title
 	where
 	    a.name ='Alan Moore' and
 		b.book_id = ba.book_id and
-		a.author_id = ba.author_id
-	group by
-		b.book_id;
+		a.author_id = ba.author_id;
   
 begin transaction;
 

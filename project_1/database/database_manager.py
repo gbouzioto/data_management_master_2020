@@ -138,7 +138,7 @@ class ComicBooksDBManager(object):
         self._cursor.execute(sql)
 
     @safe_connection("Error in executing create test data method")
-    def create_test_data(self, user_num=10, order_per_user=5, book_order_per_user=2, address_per_user=3):
+    def create_test_data(self, user_num=10, order_per_user=5, address_per_user=3):
         """
         Creates data for testing. Note that this method modifies the book price on actual data.
         If you want to restore their price to its previous value you will have to turn the first
@@ -148,7 +148,6 @@ class ComicBooksDBManager(object):
 
         :param user_num: number of Fake users to be created
         :param order_per_user: number of Fake orders per user
-        :param book_order_per_user: number of Fake book orders per user
         :param address_per_user: number of Fake addresses per user
         """
         book_sql = """update "2016_book" set current_price=%s where book_id=%s"""
@@ -201,13 +200,17 @@ class ComicBooksDBManager(object):
         orders = list(OrderFactory.generate_orders(user_address_mapper, user_num, order_per_user))
         values = [[order.user, order.billing_address, order.shipping_address, order.placement] for order in orders]
         execute_values(self._cursor, order_sql, values)
-
+        # create fake book orders
+        book_orders = list(BookOrderFactory.generate_book_orders(book_ids_num, len(orders)))
+        values = [[book_order.book, book_order.order, book_order.quantity] for book_order in book_orders]
+        execute_values(self._cursor, book_order_sql, values)
         self._conn.commit()
 
     def clear_test_data(self):
-        table_names = ["2016_user", "2016_address", "2016_order", "2016_book_order", "2016_user_address"]
-        for table_name in table_names:
-            self._truncate_table(table_name)
+        queries = ["""truncate "2016_user", "2016_order", "2016_book_order", "2016_user_address" restart identity""",
+                   """delete from "2016_address" """, """alter sequence "2016_address_address_id_seq" RESTART WITH 1"""]
+        for query in queries:
+            self._cursor.execute(query)
         self._conn.commit()
 
     @classmethod

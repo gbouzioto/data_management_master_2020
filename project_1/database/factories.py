@@ -353,18 +353,15 @@ class BookOrderFactory(object):
     """Class used for generating fake UserAddress data"""
 
     @staticmethod
-    def generate_book_orders(user_num=1, order_per_user=1, book_order_per_user=1):
+    def generate_book_orders(book_num=10, order_num=10):
         """
         Generator of UserAddress objects
-        :param user_num: number of users
-        :param order_per_user: number of orders per user
-        :param book_order_per_user: number of book_order_per_user
+        :param book_num: number of books available
+        :param order_num: number of total orders
         """
-        for i in range(1, user_num + 1):
-            for j in range(i, i + order_per_user):
-                for k in range(j, j + book_order_per_user):
-                    data = {"book": k, "order": j, "quantity": 1}
-                    yield BookOrder.build_from_data(data)
+        for i in range(1, order_num + 1):
+            data = {"book": random.randint(1, book_num), "order": i, "quantity": random.randint(1, 4)}
+            yield BookOrder.build_from_data(data)
 
     def __str__(self):
         return "BookOrderFactory"

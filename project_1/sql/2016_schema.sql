@@ -517,7 +517,7 @@ CREATE UNIQUE INDEX "2016_user_username_uindex" ON public."2016_user" USING btre
 --
 
 ALTER TABLE ONLY public."2016_book"
-    ADD CONSTRAINT "2016_book_2016_publisher_publisher_id_fk" FOREIGN KEY (publisher_id) REFERENCES public."2016_publisher"(publisher_id);
+    ADD CONSTRAINT "2016_book_2016_publisher_publisher_id_fk" FOREIGN KEY (publisher_id) REFERENCES public."2016_publisher"(publisher_id) ON DELETE SET NULL;
 
 
 --
@@ -581,7 +581,7 @@ ALTER TABLE ONLY public."2016_order"
 --
 
 ALTER TABLE ONLY public."2016_publisher"
-    ADD CONSTRAINT "2016_publisher_2016_address_address_id_fk" FOREIGN KEY (address_id) REFERENCES public."2016_address"(address_id);
+    ADD CONSTRAINT "2016_publisher_2016_address_address_id_fk" FOREIGN KEY (address_id) REFERENCES public."2016_address"(address_id) ON DELETE SET NULL;
 
 
 --
