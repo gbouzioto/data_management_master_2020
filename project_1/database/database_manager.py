@@ -3,7 +3,8 @@ import functools
 import psycopg2
 from psycopg2.extras import execute_values
 
-from project_1.database.factories import MiscMixin
+from project_1.database.factories import (MiscMixin, UserFactory, AddressFactory,
+                                          UserAddressFactory, BookOrderFactory, OrderFactory)
 
 
 def safe_connection(error_msg=None):
@@ -29,7 +30,7 @@ class ComicBooksDBManager(object):
     def __init__(self):
         self._conn = None
         self._cursor = None
-        self._present_authors = None
+        self._author_id_mapper = {}
 
     def __str__(self):
         return f"ComicBooksDBManager(db_id={id(self._conn)})"
@@ -48,17 +49,23 @@ class ComicBooksDBManager(object):
                 insert into "2016_author" (gender, name, nationality)
                 values %s
                 """
-        values = [author.to_list() for author in data.values()]
+        id_count = 1
+        values = []
+        for author_id, author_data in data.items():
+            # map the ids of the authors to the ids in the database
+            # so the relation book_author can be filled
+            self._author_id_mapper[author_id] = id_count
+            values.append(author_data.to_list())
+            id_count += 1
         execute_values(cur=self._cursor, sql=sql, argslist=values)
         self._conn.commit()
-        self._present_authors = len(values)
 
     @safe_connection("Error in executing insert relations method")
     def insert_relations(self, book_data):
         """
         Inserts all data from the book_data gathered along with their relations.
         :param book_data: {book_id: {"book": "database.entities.Book",
-                           "book_authors": [database.entities.BookAuthor],
+                           "book_authors": {author_id: database.entities.BookAuthor},
                            "author_ordinal": int, "reviews": [database.entities.Review],
                            "publisher": database.entities.Publisher}
         """
@@ -70,10 +77,6 @@ class ComicBooksDBManager(object):
         book_sql = """
             insert into "2016_book"(isbn, current_price, description, publication_year, title, publisher_id) 
                 values (%s, %s, %s, %s, %s, %s)
-        """
-        author_sql = """
-            insert into "2016_author"(gender, name, nationality)
-            values (%s, %s, %s)
         """
         review_sql = """
             insert into "2016_review"(created, score, text)
@@ -90,7 +93,6 @@ class ComicBooksDBManager(object):
         # initial id values
         cur_book_id = 1
         cur_pub_id = 1
-        cur_author_id = self._present_authors
         cur_review_id = 0
 
         for data in book_data.values():
@@ -106,11 +108,9 @@ class ComicBooksDBManager(object):
                                  book.publication_year, book.title, book.publisher])
             # Author and Book Author query
             if book_authors := data.get("book_authors"):
-                for book_author in book_authors:
-                    self._cursor.execute(author_sql, [book_author.author.gender, book_author.author.name,
-                                                      book_author.author.nationality])
-                    cur_author_id += 1
-                    self._cursor.execute(book_author_sql, [cur_author_id, cur_book_id, book_author.ordinal,
+                for author_id, book_author in book_authors.items():
+                    self._cursor.execute(book_author_sql, [self._author_id_mapper[author_id],
+                                                           cur_book_id, book_author.ordinal,
                                                            book_author.role])
             # Review and Book Review query
             if reviews := data.get("reviews"):
@@ -152,33 +152,58 @@ class ComicBooksDBManager(object):
         :param address_per_user: number of Fake addresses per user
         """
         book_sql = """update "2016_book" set current_price=%s where book_id=%s"""
-        author_sql = """
-                   insert into "2016_author"(gender, name, nationality)
-                   values (%s, %s, %s)
-               """
-        review_sql = """
-                   insert into "2016_review"(created, score, text)
-                   values (%s, %s, %s)
-               """
-        book_author_sql = """
-                   insert into "2016_book_author"(author_id, book_id, author_ordinal, role) 
-                   values (%s, %s, %s, %s)
-               """
-        book_review_sql = """
-                   insert into "2016_book_review"(book_id, review_id) 
-                   values (%s, %s)
-               """
+        user_sql = """
+           insert into "2016_user"(username, password, phone_number, email, real_name)
+           values %s
+        """
+        address_sql = """
+           insert into "2016_address"(address_name, address_number, city, country, postal_code)
+           values %s
+        """
+        user_address_sql = """
+           insert into "2016_user_address"(address_id, user_id, is_physical, is_shipping, is_billing, is_active) 
+           values %s
+        """
+        book_order_sql = """
+           insert into "2016_book_order"(book_id, order_id, quantity) 
+           values %s
+        """
+        order_sql = """
+           insert into "2016_order"(user_id, billing_address_id, shipping_address_id, placement) 
+           values %s
+        """
 
+        self.clear_test_data()
         book_ids_num = user_num * order_per_user
         print(f"\n ****** The first {book_ids_num} books were chosen ******\n")
         # create fake prices
         prices = [MiscMixin.money() for _ in range(book_ids_num)]
         for i in range(book_ids_num):
             self._cursor.execute(book_sql, (prices[i], i + 1))
+        # create fake users
+        users = list(UserFactory.generate_users(user_num))
+        values = [[user.username, user.password, user.phone_number, user.email, user.real_name] for user in users]
+        execute_values(self._cursor, user_sql, values)
+        # create fake addresses
+        address_nums = address_per_user * user_num
+        addresses = list(AddressFactory.generate_addresses(address_nums))
+        values = [[address.address_name, address.address_number, address.city, address.country, address.postal_code]
+                  for address in addresses]
+        execute_values(self._cursor, address_sql, values)
+        # create fake user addresses
+        user_address_mapper = {}
+        user_addresses = list(UserAddressFactory.generate_user_addresses(user_address_mapper,
+                                                                         user_num, address_per_user))
+        values = [[user_address.address, user_address.user, user_address.is_physical, user_address.is_shipping,
+                   user_address.is_billing, user_address.is_active] for user_address in user_addresses]
+        execute_values(self._cursor, user_address_sql, values)
+        # create fake orders
+        orders = list(OrderFactory.generate_orders(user_address_mapper, user_num, order_per_user))
+        values = [[order.user, order.billing_address, order.shipping_address, order.placement] for order in orders]
+        execute_values(self._cursor, order_sql, values)
 
         self._conn.commit()
 
-    @safe_connection("Error in executing clear_test_data method")
     def clear_test_data(self):
         table_names = ["2016_user", "2016_address", "2016_order", "2016_book_order", "2016_user_address"]
         for table_name in table_names:

@@ -58,17 +58,16 @@ class UCSDJsonDataParser(object):
         from the initial authors found. Publisher entities are also created here.
         """
         file_path = os.path.join(self.data_path, self.books_filename)
-        author_ids = set()
         with open(file_path) as fin:
             for line in fin:
                 book_data = json.loads(line)
                 book_id = book_data.get("book_id")
                 book_isbn = book_data.get("isbn")
-                if book_id and book_isbn:
+                if book_id and book_isbn and len(book_isbn) == 10:
 
                     # initialize a book dictionary, it will contain a Book and it can contain a Publisher,
                     # BookAuthor and Review objects
-                    book_relations = {"book_authors": [], "author_ordinal": 0, "reviews": []}
+                    book_relations = {"book_authors": {}, "author_ordinal": 0, "reviews": []}
 
                     # create a Book
                     book = Book()
@@ -90,23 +89,18 @@ class UCSDJsonDataParser(object):
                     if authors := book_data.get("authors"):
                         for author in authors:
                             author_id = author.get("author_id")
-                            validated_author = self._valid_data["authors"].get(author_id)
-                            if validated_author:
+                            if author_id in self._valid_data["authors"].keys():
+                                validated_author = self._valid_data["authors"][author_id]
                                 book_author = BookAuthor()
                                 book_author.author = validated_author
                                 book_relations["author_ordinal"] += 1
                                 role = author.get("role")
                                 book_author.role = role if role else None
                                 book_author.ordinal = book_relations["author_ordinal"]
-                                author_ids.add(author_id)
-                                book_relations["book_authors"].append(book_author)
+                                book_relations["book_authors"][author_id] = book_author
 
                     book_relations["book"] = book
                     self._valid_data["books"][book_id] = book_relations
-
-        # remove authors we have already added as book authors
-        for author_id in author_ids:
-            del self._valid_data["authors"][author_id]
 
     def _process_reviews(self):
         """

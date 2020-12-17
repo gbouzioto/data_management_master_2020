@@ -178,4 +178,4 @@ class UserAddress(BaseEntity):
         self.is_active = None
 
     def __str__(self):
-        return f"UserAddress(address={self.address}, review=({self.user})"
+        return f"UserAddress(address={self.address}, user=({self.user})"

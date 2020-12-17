@@ -2,7 +2,7 @@ import decimal
 import random
 from faker import Faker
 from faker.providers import person, phone_number, internet, isbn, address, date_time, lorem, misc
-from project_1.database.entities import Address, Author, Book, Publisher, User, Review
+from project_1.database.entities import Address, Author, Book, Publisher, User, Review, UserAddress, BookOrder, Order
 
 
 class BaseMixin(object):
@@ -303,3 +303,68 @@ class ReviewFactory(object):
 
     def __str__(self):
         return "ReviewFactory"
+
+
+class UserAddressFactory(object):
+    """Class used for generating fake UserAddress data"""
+
+    @staticmethod
+    def generate_user_addresses(user_address_mapper, user_num=1, addresses_per_user=1):
+        """
+        Generator of UserAddress objects
+        :param user_address_mapper: dict that holds the mapping of user_id -> address_id
+        :param user_num: number of users
+        :param addresses_per_user: number of addresses per user
+        """
+        for i in range(1, user_num + 1):
+            user_address_mapper[i] = []
+            for j in range(i, i + addresses_per_user):
+                data = {"address": j, "user": i, "is_physical": True,
+                        "is_shipping": True, "is_billing": True, "is_active": True}
+                user_address_mapper[i].append(j)
+                yield UserAddress.build_from_data(data)
+
+    def __str__(self):
+        return "UserAddressFactory"
+
+
+class OrderFactory(object):
+    """Class used for generating fake UserAddress data"""
+
+    @staticmethod
+    def generate_orders(user_address_mapper, user_num=1, order_per_user=1):
+        """
+        Generator of UserAddress objects
+        :param user_address_mapper: dict that holds the mapping of user_id -> address_id
+        :param user_num: number of users
+        :param order_per_user: number of orders per user
+        """
+        for i in range(1, user_num + 1):
+            for j in range(i, i + order_per_user):
+                data = {"user": i, "billing_address": user_address_mapper[i][0],
+                        "shipping_address": user_address_mapper[i][0], "placement": _fg.timestamp()}
+                yield Order.build_from_data(data)
+
+    def __str__(self):
+        return "OrderFactory"
+
+
+class BookOrderFactory(object):
+    """Class used for generating fake UserAddress data"""
+
+    @staticmethod
+    def generate_book_orders(user_num=1, order_per_user=1, book_order_per_user=1):
+        """
+        Generator of UserAddress objects
+        :param user_num: number of users
+        :param order_per_user: number of orders per user
+        :param book_order_per_user: number of book_order_per_user
+        """
+        for i in range(1, user_num + 1):
+            for j in range(i, i + order_per_user):
+                for k in range(j, j + book_order_per_user):
+                    data = {"book": k, "order": j, "quantity": 1}
+                    yield BookOrder.build_from_data(data)
+
+    def __str__(self):
+        return "BookOrderFactory"
