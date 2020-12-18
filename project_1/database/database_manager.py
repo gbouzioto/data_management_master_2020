@@ -39,11 +39,22 @@ class ComicBooksDBManager(object):
         self._cursor.close()
         self._conn.close()
 
-    @safe_connection("Error in executing insert authors method")
-    def insert_authors(self, data):
+    def insert_parsed_data(self, author_data, book_data):
+        """
+        Inserts all parsed data into the database.
+        :param author_data: {"author_id": database.entities.Author}
+        :param book_data: {book_id: {"book": "database.entities.Book",
+                           "book_authors": {author_id: database.entities.BookAuthor},
+                           "author_ordinal": int, "reviews": [database.entities.Review],
+                           "publisher": database.entities.Publisher}
+        """
+        self._insert_authors(author_data)
+        self._insert_relations(book_data)
+
+    def _insert_authors(self, author_data):
         """
         Inserts all the authors provided in the data
-        :param data: {"author_id": database.entities.Author}
+        :param author_data: {"author_id": database.entities.Author}
         """
         sql = """
                 insert into "2016_author" (gender, name, nationality)
@@ -51,7 +62,7 @@ class ComicBooksDBManager(object):
                 """
         id_count = 1
         values = []
-        for author_id, author_data in data.items():
+        for author_id, author_data in author_data.items():
             # map the ids of the authors to the ids in the database
             # so the relation book_author can be filled
             self._author_id_mapper[author_id] = id_count
@@ -60,8 +71,7 @@ class ComicBooksDBManager(object):
         execute_values(cur=self._cursor, sql=sql, argslist=values)
         self._conn.commit()
 
-    @safe_connection("Error in executing insert relations method")
-    def insert_relations(self, book_data):
+    def _insert_relations(self, book_data):
         """
         Inserts all data from the book_data gathered along with their relations.
         :param book_data: {book_id: {"book": "database.entities.Book",

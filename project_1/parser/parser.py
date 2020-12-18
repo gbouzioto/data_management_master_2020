@@ -54,8 +54,7 @@ class UCSDJsonDataParser(object):
         Processes the book data and keeps only the books that are valid.
         A valid book must at least have an isbn and an id. Moreover creates the book_authors relations.
         These are created by searching the authors dictionary given the author ids contained in the 'authors'
-        key of the book. In order to avoid duplicate entries afterwards, the author ids found will be removed
-        from the initial authors found. Publisher entities are also created here.
+        key of the book. Publisher entities are also created here.
         """
         file_path = os.path.join(self.data_path, self.books_filename)
         with open(file_path) as fin:
@@ -66,7 +65,7 @@ class UCSDJsonDataParser(object):
                 if book_id and book_isbn and len(book_isbn) == 10:
 
                     # initialize a book dictionary, it will contain a Book and it can contain a Publisher,
-                    # BookAuthor and Review objects
+                    # BookAuthor and Review objects and starts with a 0 author ordinal
                     book_relations = {"book_authors": {}, "author_ordinal": 0, "reviews": []}
 
                     # create a Book

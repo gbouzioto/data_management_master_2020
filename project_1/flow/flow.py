@@ -5,10 +5,11 @@ from project_1.parser.parser import UCSDJsonDataParser
 
 FLOW_HELP_TEXT = """
 flow of the program, defaults to main. It has 3 options:
-    -main: parses the dataset and inserts the actual data into the db
-    -test: provided that main flow has been executed at least once or the database contains its data 
-    creates a handful of user, orders and addresses for testing
-    -test_rb: clears the tables that were used by the test in order for the database to contain clean data.
+    main: parses the dataset and inserts the actual data into the db,
+    test: provided that the main flow has been executed at least once or the database contains data 
+    creates some users, orders and addresses for testing,
+    test_rb: clears the tables that were used by the test flow in order for the database to contain clean data, 
+    however book price updates have to be cleaned manually.
     """
 
 
@@ -42,8 +43,7 @@ def _main_flow(args):
     db_manager = ComicBooksDBManager.create(database=args.database, password=args.password, user=args.user,
                                             host=args.ip, port=args.port)
     db_manager.truncate_tables()
-    db_manager.insert_authors(author_data)
-    db_manager.insert_relations(book_data)
+    db_manager.insert_parsed_data(author_data, book_data)
     db_manager.close()
 
 

@@ -3,7 +3,7 @@
 -- c) An SQL query that returns the ISBNs and titles for all books authored by “Alan Moore” (in any role).
 -- d) An SQL transaction that modifies a user’s order by removing a previous order with a new one of the same user.
 
-select count(b.book_id) as book_count
+select count(book_id) as book_count
 	from 
 		"2016_book";
 
@@ -57,10 +57,6 @@ with q1 as (delete from "2016_book_order"
 			where order_id in (select q1.order_id from q1) returning user_id, billing_address_id, shipping_address_id),
 	q3 as (insert into "2016_order" (user_id, billing_address_id, shipping_address_id, placement)
 			select q2.user_id, q2.billing_address_id, q2.shipping_address_id, now() from q2 returning order_id)
-	insert into "2016_book_order" (book_id, order_id) select (
-																select distinct b.book_id
-																from "2016_book" as b, "2016_book_order" as bo, "2016_order" as o 
-																where b.book_id = bo.book_id and bo.order_id = o.order_id limit 1  
-															), q3.order_id from q3;
+	insert into "2016_book_order" (book_id, order_id) select (select book_id from "2016_book" limit 1), q3.order_id from q3;
 
 commit;
