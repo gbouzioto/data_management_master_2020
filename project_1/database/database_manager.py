@@ -223,6 +223,16 @@ class ComicBooksDBManager(object):
             self._cursor.execute(query)
         self._conn.commit()
 
+    def assign_prices_to_books(self):
+        book_sql = """update "2016_book" set current_price=%s where book_id=%s"""
+        book_sql_id = """select book_id from "2016_book" order by book_id desc limit 1"""
+        self._cursor.execute(book_sql_id)
+        max_id = self._cursor.fetchone()[0]
+        prices = [MiscMixin.money() for _ in range(max_id)]
+        for i in range(max_id):
+            self._cursor.execute(book_sql, (prices[i], i + 1))
+        self._conn.commit()
+
     @classmethod
     def create(cls, database, password, user="postgres", host="localhost", port="5432"):
         """
