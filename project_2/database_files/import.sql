@@ -30,10 +30,10 @@ load csv with headers from 'file:///2016_user.csv' as row
 merge (user:User {user_id: toInteger(row.user_id)})
 on create set user.username = row.username, user.email = row.email, user.real_name = row.real_name;
 
-// load Order table
+// load Order table and assign current datetime to completed field if it is null
 load csv with headers from 'file:///2016_order.csv' as row
 merge (order:Order {order_id: toInteger(row.order_id)})
-on create set order.placement = row.placement, order.completed = row.completed;
+on create set order.placement = row.placement, order.completed = coalesce(row.completed, datetime());
 
 // add constraints
 CREATE INDEX address_id FOR (address:Address) ON (address.address_id);
