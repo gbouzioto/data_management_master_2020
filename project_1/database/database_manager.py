@@ -1,4 +1,5 @@
 import functools
+import random
 
 import psycopg2
 from psycopg2.extras import execute_values
@@ -231,6 +232,19 @@ class ComicBooksDBManager(object):
         prices = [MiscMixin.money() for _ in range(max_id)]
         for i in range(max_id):
             self._cursor.execute(book_sql, (prices[i], i + 1))
+        self._conn.commit()
+
+    def assign_addresses_to_publishers(self):
+        publisher_sql = """update "2016_publisher" set address_id=%s where publisher_id=%s"""
+        publisher_sql_id = """select publisher_id from "2016_publisher" order by publisher_id desc limit 1"""
+        address_sql_id = """select address_id from "2016_address" order by address_id desc limit 1"""
+        self._cursor.execute(publisher_sql_id)
+        max_pub_id = self._cursor.fetchone()[0]
+        self._cursor.execute(address_sql_id)
+        max_address_id = self._cursor.fetchone()[0]
+        for i in range(max_pub_id):
+            random_id = random.randint(1, max_address_id)
+            self._cursor.execute(publisher_sql, (random_id, i + 1))
         self._conn.commit()
 
     @classmethod
