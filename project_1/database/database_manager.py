@@ -5,7 +5,7 @@ import psycopg2
 from psycopg2.extras import execute_values
 
 from project_1.database.factories import (MiscMixin, UserFactory, AddressFactory,
-                                          UserAddressFactory, BookOrderFactory, OrderFactory)
+                                          UserAddressFactory, BookOrderFactory, OrderFactory, FakeGenerator)
 
 
 def safe_connection(error_msg=None):
@@ -245,6 +245,18 @@ class ComicBooksDBManager(object):
         for i in range(max_pub_id):
             random_id = random.randint(1, max_address_id)
             self._cursor.execute(publisher_sql, (random_id, i + 1))
+        self._conn.commit()
+
+    def assign_gender_nationality_to_authors(self):
+        author_sql = """update "2016_author" set gender=%s, nationality=%s where author_id=%s"""
+        author_sql_id = """select author_id from "2016_author" order by author_id desc limit 1"""
+        self._cursor.execute(author_sql_id)
+        max_author_id = self._cursor.fetchone()[0]
+        gen = FakeGenerator()
+        for i in range(max_author_id):
+            random_gender = gen.gender()
+            random_nationality = gen.nationality()
+            self._cursor.execute(author_sql, (random_gender, random_nationality, i + 1))
         self._conn.commit()
 
     @classmethod

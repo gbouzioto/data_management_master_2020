@@ -75,9 +75,10 @@ def run_exercise():
     flows[args.flow](args)
 
 
-def book_prices_pub_addresses():
+def additional_data():
     args = _parse_user_args()
     db_manager = ComicBooksDBManager.create(database=args.database, password=args.password, user=args.user,
                                             host=args.ip, port=args.port)
     db_manager.assign_prices_to_books()
     db_manager.assign_addresses_to_publishers()
+    db_manager.assign_gender_nationality_to_authors()
