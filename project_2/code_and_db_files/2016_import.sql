@@ -69,7 +69,7 @@ load csv with headers from 'file:///2016_order.csv' as row
 match (user:User {user_id: toInteger(row.user_id)})
 match (address:Address {address_id: toInteger(row.shipping_address_id)})
 match (order:Order {order_id: toInteger(row.order_id)})
-create (user)-[:HAS_ORDERED]->(order);
+create (user)-[:HAS_ORDERED]->(order)
 create (order)-[:SHIPPED_TO]->(address);
 
 // add AUTHORED_BY edges
