@@ -1,3 +1,5 @@
+// CREATE NODES
+
 // load Address table
 load csv with headers from 'file:///2016_address.csv' as row
 create (address:Address {address_id: toInteger(row.address_id), country: row.country});
@@ -11,12 +13,14 @@ load csv with headers from 'file:///2016_book.csv' as row
 create (book:Book {book_id: toInteger(row.book_id), isbn: row.isbn, current_price: toFloat(row.current_price), title: row.title, publication_year: toInteger(row.publication_year)});
 
 // load Author table (note that this needs to be run separately in neo4j broswer as it does not support auto transactions in multi statement query editor)
+// periodic commit was used to avoid memory errors due to large data volume in the file
 :auto using periodic commit 50000 load csv with headers from 'file:///2016_author.csv' as row
 create (author:Author {author_id: toInteger(row.author_id), name: row.name, gender: row.gender, nationality: row.nationality});
 
 // load Review table (note that this needs to be run separately in neo4j broswer as it does not support auto transactions in multi statement query editor)
+// periodic commit was used to avoid memory errors due to large data volume in the file
 :auto using periodic commit 50000 load csv with headers from 'file:///2016_review.csv' as row
-create (review:Review {review_id: toInteger(row.review_id), timestamp: row.created, score: row.score});
+create (review:Review {review_id: toInteger(row.review_id), timestamp: row.created, score: toInteger(row.score)});
 
 // load User table
 load csv with headers from 'file:///2016_user.csv' as row
@@ -26,7 +30,8 @@ create (user:User {user_id: toInteger(row.user_id), username: row.username, emai
 load csv with headers from 'file:///2016_order.csv' as row
 create (order:Order {order_id: toInteger(row.order_id), placement: row.placement, completed: coalesce(row.completed, datetime())});
 
-// add constraints
+// ADD CONSTRAINTS
+
 CREATE CONSTRAINT address_id ON (address:Address) ASSERT (address.address_id) IS UNIQUE;
 CREATE CONSTRAINT publisher_id ON (publisher:Publisher) ASSERT (publisher.publisher_id) IS UNIQUE;
 CREATE CONSTRAINT book_id ON (book:Book) ASSERT (book.book_id) IS UNIQUE;
@@ -39,7 +44,7 @@ CREATE CONSTRAINT email ON (user:User) ASSERT (user.email) IS UNIQUE;
 CREATE CONSTRAINT order_id ON (order:Order) ASSERT (order.order_id) IS UNIQUE;
 call db.awaitIndexes(300);
 
-// add edges
+// ADD EDGES
 
 // add HAS_HEADQUARTERS_IN edges for Publishers
 load csv with headers from 'file:///2016_publisher.csv' as row
