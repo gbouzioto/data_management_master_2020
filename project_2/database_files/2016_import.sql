@@ -27,16 +27,17 @@ load csv with headers from 'file:///2016_order.csv' as row
 create (order:Order {order_id: toInteger(row.order_id), placement: row.placement, completed: coalesce(row.completed, datetime())});
 
 // add constraints
-CREATE INDEX address_id FOR (address:Address) ON (address.address_id);
-CREATE INDEX publisher_id FOR (publisher:Publisher) ON (publisher.publisher_id);
-CREATE INDEX book_id FOR (book:Book) ON (book.book_id);
-CREATE INDEX isbn FOR (book:Book) ON (book.isbn);
-CREATE INDEX author_id FOR (author:Author) ON (author.author_id);
-CREATE INDEX review_id FOR (review:Review) ON (review.review_id);
-CREATE INDEX user_id FOR (user:User) ON (user.user_id);
-CREATE INDEX username FOR (user:User) ON (user.username);
-CREATE INDEX email FOR (user:User) ON (user.email);
-CREATE INDEX order_id FOR (order:Order) ON (order.order_id);
+CREATE CONSTRAINT address_id ON (address:Address) ASSERT (address.address_id) IS UNIQUE;
+CREATE CONSTRAINT publisher_id ON (publisher:Publisher) ASSERT (publisher.publisher_id) IS UNIQUE;
+CREATE CONSTRAINT book_id ON (book:Book) ASSERT (book.book_id) IS UNIQUE;
+CREATE CONSTRAINT isbn ON (book:Book) ASSERT (book.isbn) IS UNIQUE;
+CREATE CONSTRAINT author_id ON (author:Author) ASSERT (author.author_id) IS UNIQUE;
+CREATE CONSTRAINT review_id ON (review:Review) ASSERT (review.review_id) IS UNIQUE;
+CREATE CONSTRAINT user_id ON (user:User) ASSERT (user.user_id) IS UNIQUE;
+CREATE CONSTRAINT username ON (user:User) ASSERT (user.username) IS UNIQUE;
+CREATE CONSTRAINT email ON (user:User) ASSERT (user.email) IS UNIQUE;
+CREATE CONSTRAINT order_id ON (order:Order) ASSERT (order.order_id) IS UNIQUE;
+call db.awaitIndexes(300);
 
 // add edges
 
